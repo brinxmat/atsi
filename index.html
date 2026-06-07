@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATSI — Allistic Tendency & Sophism Index</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --paper: #faf8f3;
+    --ink: #1a1510;
+    --muted: #6b6054;
+    --accent: #c0392b;
+    --accent2: #2c5f2e;
+    --stamp-red: #b83232;
+    --rule: #c8bfad;
+    --highlight: #f0e68c;
+    --selection-bg: #2c5f2e;
+    --selection-txt: #faf8f3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  ::selection { background: var(--selection-bg); color: var(--selection-txt); }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(200,191,173,0.25) 27px, rgba(200,191,173,0.25) 28px);
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.08), 8px 8px 0 rgba(0,0,0,0.04);
+    padding: 0;
+    position: relative;
+  }
+
+  /* Hole punches */
+  .container::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(200,50,50,0.3);
+    z-index: 0;
+  }
+
+  .hole {
+    position: absolute;
+    left: 21px;
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    z-index: 10;
+  }
+  .hole:nth-child(1) { top: 60px; }
+  .hole:nth-child(2) { top: 200px; }
+  .hole:nth-child(3) { bottom: 200px; }
+  .hole:nth-child(4) { bottom: 60px; }
+
+  .header {
+    border-bottom: 3px double var(--rule);
+    padding: 40px 60px 30px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .header-meta .doc-id {
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .restricted-badge {
+    background: var(--accent);
+    color: white;
+    padding: 2px 8px;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 5vw, 46px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+
+  h1 span {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .header-blurb {
+    font-size: 12px;
+    color: var(--muted);
+    border-left: 3px solid var(--rule);
+    padding-left: 14px;
+    max-width: 520px;
+    line-height: 1.7;
+  }
+
+  .progress-bar-wrapper {
+    padding: 0 60px;
+    padding-top: 18px;
+    padding-bottom: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .progress-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-track {
+    height: 4px;
+    background: var(--rule);
+    width: 100%;
+    position: relative;
+    margin-bottom: 0;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent2);
+    width: 0%;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .content {
+    padding: 30px 60px 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-divider {
+    margin: 32px 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-divider .section-num {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    margin-bottom: 4px;
+    font-style: italic;
+  }
+
+  .question-block {
+    margin-bottom: 36px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .question-text {
+    font-size: 13px;
+    line-height: 1.75;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: rgba(200,191,173,0.15);
+    border-left: 3px solid var(--ink);
+    position: relative;
+  }
+
+  .question-num {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 0;
+    transition: all 0.15s ease;
+    position: relative;
+  }
+
+  .option:hover {
+    background: rgba(200,191,173,0.2);
+    border-color: var(--rule);
+  }
+
+  .option.selected {
+    background: rgba(44,95,46,0.07);
+    border-color: var(--accent2);
+  }
+
+  .option input[type="radio"] {
+    display: none;
+  }
+
+  .option-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border: 1.5px solid var(--rule);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0;
+    transition: all 0.15s;
+    background: var(--paper);
+    margin-top: 1px;
+  }
+
+  .option.selected .option-letter {
+    background: var(--accent2);
+    color: white;
+    border-color: var(--accent2);
+  }
+
+  .option-text {
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+
+  .submit-area {
+    margin-top: 36px;
+    text-align: center;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .unanswered-warning {
+    color: var(--accent);
+    font-size: 11px;
+    margin-bottom: 14px;
+    min-height: 18px;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-submit {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 14px 48px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .btn-submit:hover {
+    background: var(--accent2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  }
+
+  .btn-submit:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  /* Results */
+  #results {
+    display: none;
+    padding: 40px 60px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .stamp-container {
+    position: relative;
+    margin-bottom: 30px;
+  }
+
+  .stamp {
+    display: inline-block;
+    border: 4px solid var(--stamp-red);
+    color: var(--stamp-red);
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    padding: 8px 18px;
+    transform: rotate(-4deg);
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-style: italic;
+    line-height: 1.1;
+  }
+
+  .stamp.green {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    transform: rotate(2deg);
+  }
+
+  .score-display {
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(200,191,173,0.2);
+    border: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .score-big {
+    font-family: 'DM Serif Display', serif;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--accent);
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .score-big.ok {
+    color: var(--accent2);
+  }
+
+  .score-info {
+    flex: 1;
+  }
+
+  .score-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .diagnosis-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .sq-badge {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .diagnosis-text {
+    font-size: 13px;
+    line-height: 1.8;
+    margin: 20px 0;
+    padding: 16px;
+    border-left: 3px solid var(--rule);
+    background: rgba(200,191,173,0.1);
+  }
+
+  .breakdown-title {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    margin-top: 24px;
+  }
+
+  .breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .breakdown-item {
+    text-align: center;
+    padding: 8px 4px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+
+  .breakdown-q {
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .breakdown-pts {
+    font-size: 20px;
+    font-family: 'DM Serif Display', serif;
+    line-height: 1;
+  }
+
+  .breakdown-pts.pts-0 { color: var(--accent2); }
+  .breakdown-pts.pts-2 { color: #c87d00; }
+  .breakdown-pts.pts-5 { color: var(--accent); }
+
+  .breakdown-letter {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .recommendations {
+    background: rgba(200,191,173,0.15);
+    border: 1px dashed var(--rule);
+    padding: 16px 20px;
+    margin-top: 20px;
+  }
+
+  .recommendations-title {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .recommendations ul {
+    list-style: none;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+
+  .recommendations ul li::before {
+    content: '→  ';
+    color: var(--accent);
+  }
+
+  .btn-retake {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--ink);
+    padding: 12px 36px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s;
+    margin-top: 24px;
+  }
+
+  .btn-retake:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .footer-note {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.7;
+    letter-spacing: 0.03em;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 16px 8px 60px; }
+    .header, .content, #results { padding-left: 32px; padding-right: 20px; }
+    .progress-bar-wrapper { padding-left: 32px; padding-right: 20px; }
+    .container::before { left: 16px; }
+    .hole { left: 9px; }
+    .breakdown-grid { grid-template-columns: repeat(2, 1fr); }
+    .score-display { flex-direction: column; gap: 12px; }
+    .score-big { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="hole"></div>
+  <div class="hole"></div>
+  <div class="hole"></div>
+  <div class="hole"></div>
+
+  <div class="header">
+    <div class="header-meta">
+      <span class="doc-id">ATSI-2024 / Form 7B</span>
+      <span class="restricted-badge">⚠ Restricted — Certified Practitioners Only</span>
+    </div>
+    <h1>Allistic Tendency &<br><span>Sophism Index</span></h1>
+    <div class="subtitle">Clinical Assessment Protocol · Neurological Diagnostics Division</div>
+    <div class="header-blurb">
+      Standardized diagnostic instrument utilized by neurotypical (autistic) clinicians to evaluate
+      children and adults suspected of suffering from Allistic Spectrum Disorder (ASD).
+      Answer each scenario based on your most natural, instinctive response.
+    </div>
+  </div>
+
+  <div class="progress-bar-wrapper">
+    <div class="progress-label">
+      <span>Assessment Progress</span>
+      <span id="progress-text">0 / 5 answered</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="content" id="questionnaire">
+
+    <!-- Section 1 -->
+    <div class="section-divider">
+      <span class="section-num">Section 1</span>
+    </div>
+    <div class="section-title">Veracity and Linguistic Distortion <em>(Sophism)</em></div>
+
+    <!-- Q1 -->
+    <div class="question-block" style="animation-delay: 0.05s">
+      <div class="question-num">Question 01 of 05</div>
+      <div class="question-text">
+        A coworker shows you a digital presentation they spent 20 hours creating. The layout is objectively chaotic, the color contrast violates readability standards, and the data is misaligned. They ask, "What do you think?"
+      </div>
+      <div class="options" data-question="1">
+        <label class="option">
+          <input type="radio" name="q1" value="0">
+          <span class="option-letter">A</span>
+          <span class="option-text">I point out the exact design flaws, cite the readability guidelines, and offer to help align the data columns.</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q1" value="2">
+          <span class="option-letter">B</span>
+          <span class="option-text">I pause, smile, and say, "Wow, you can really see how much hard work you put into this!" to avoid hurting their feelings.</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q1" value="5">
+          <span class="option-letter">C</span>
+          <span class="option-text">I tell them it looks "great" and "very creative," then complain to a different coworker later about how bad it was.</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-block" style="animation-delay: 0.1s">
+      <div class="question-num">Question 02 of 05</div>
+      <div class="question-text">
+        You are 15 minutes late to a critical project meeting because you overslept. Upon arrival, the chairperson asks why you are late.
+      </div>
+      <div class="options" data-question="2">
+        <label class="option">
+          <input type="radio" name="q2" value="0">
+          <span class="option-letter">A</span>
+          <span class="option-text">I state clearly: "I failed to wake up when my alarm sounded because I slept poorly."</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q2" value="2">
+          <span class="option-letter">B</span>
+          <span class="option-text">I say, "Traffic was an absolute nightmare today, I am so sorry," because traffic is a socially blameless external variable.</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q2" value="5">
+          <span class="option-letter">C</span>
+          <span class="option-text">I walk in breathing heavily, holding an empty coffee cup, and imply the barista caused a major delay.</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="section-divider">
+      <span class="section-num">Section 2</span>
+    </div>
+    <div class="section-title">Decoupled Cognitive Intent <em>(Subtext and Hints)</em></div>
+
+    <!-- Q3 -->
+    <div class="question-block" style="animation-delay: 0.15s">
+      <div class="question-num">Question 03 of 05</div>
+      <div class="question-text">
+        You are hosting a gathering at your home. It is 11:30 PM, you are physically exhausted, and you want your guests to leave so you can sleep.
+      </div>
+      <div class="options" data-question="3">
+        <label class="option">
+          <input type="radio" name="q3" value="0">
+          <span class="option-letter">A</span>
+          <span class="option-text">I announce: "The gathering is now concluded. I am tired and require sleep. Thank you for attending."</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q3" value="2">
+          <span class="option-letter">B</span>
+          <span class="option-text">I yawn loudly, check my watch conspicuously, and say, "Wow, look at the time, I can't believe how late it got!"</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q3" value="5">
+          <span class="option-letter">C</span>
+          <span class="option-text">I begin cleaning up the kitchen, washing dishes aggressively, and turning off secondary lighting while dropping hints about my early morning tomorrow.</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question-block" style="animation-delay: 0.2s">
+      <div class="question-num">Question 04 of 05</div>
+      <div class="question-text">
+        Someone you find mildly annoying asks, "Are you busy this weekend? We should hang out!" You have no plans, but you do not wish to spend time with them.
+      </div>
+      <div class="options" data-question="4">
+        <label class="option">
+          <input type="radio" name="q4" value="0">
+          <span class="option-letter">A</span>
+          <span class="option-text">I reply: "I have no scheduled tasks, but I prefer to spend my weekend alone and do not wish to socialize."</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q4" value="2">
+          <span class="option-letter">B</span>
+          <span class="option-text">I reply: "Oh no, I'm so sad, but I have a crazy busy weekend ahead! Let's definitely do something another time!"</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q4" value="5">
+          <span class="option-letter">C</span>
+          <span class="option-text">I say, "I might have some family stuff coming up, let me check my calendar and text you," with no intention of ever texting them.</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="section-divider">
+      <span class="section-num">Section 3</span>
+    </div>
+    <div class="section-title">Social Hierarchy and Dynamic Belief Systems</div>
+
+    <!-- Q5 -->
+    <div class="question-block" style="animation-delay: 0.25s">
+      <div class="question-num">Question 05 of 05</div>
+      <div class="question-text">
+        Your corporate supervisor states a mathematical or factual error during a large company-wide presentation.
+      </div>
+      <div class="options" data-question="5">
+        <label class="option">
+          <input type="radio" name="q5" value="0">
+          <span class="option-letter">A</span>
+          <span class="option-text">I immediately raise my hand or speak up to correct the data so the audience is not misinformed.</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q5" value="2">
+          <span class="option-letter">B</span>
+          <span class="option-text">I remain silent during the meeting, but pull them aside privately later to gently point it out using highly apologetic language.</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="q5" value="5">
+          <span class="option-letter">C</span>
+          <span class="option-text">I ignore the error entirely and nod in agreement because challenging a superior's accuracy could damage my career progression.</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="submit-area">
+      <div class="unanswered-warning" id="warning-msg"></div>
+      <button class="btn-submit" id="btn-submit" onclick="submitAssessment()">
+        Submit for Diagnosis
+      </button>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- Results -->
+  <div id="results">
+    <div class="stamp-container">
+      <div class="stamp" id="result-stamp">Diagnosed</div>
+    </div>
+
+    <div class="score-display">
+      <div class="score-big" id="score-number">0</div>
+      <div class="score-info">
+        <div class="score-label">Sophism Quotient (SQ)</div>
+        <div class="diagnosis-name" id="diagnosis-name">—</div>
+        <div class="sq-badge" id="diagnosis-range">Score range: —</div>
+      </div>
+    </div>
+
+    <div class="diagnosis-text" id="diagnosis-text">—</div>
+
+    <div class="breakdown-title">Per-question point breakdown</div>
+    <div class="breakdown-grid" id="breakdown-grid"></div>
+
+    <div class="recommendations" id="recommendations-box"></div>
+
+    <div style="text-align:center">
+      <button class="btn-retake" onclick="retakeAssessment()">Retake Assessment</button>
+    </div>
+
+    <div class="footer-note">
+      <strong>Disclaimer:</strong> The ATSI is a satirical instrument that inverts the logic of real-world
+      neurological assessments to highlight how "social normality" is often an arbitrary and
+      culturally-constructed standard. This document is for entertainment purposes only. Neither "allistic"
+      nor "autistic" communication styles are pathological — human social cognition is joyfully varied.
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  const answers = {};
+  const totalQuestions = 5;
+
+  // Handle option selection
+  document.querySelectorAll('.options').forEach(optionGroup => {
+    optionGroup.querySelectorAll('.option').forEach(option => {
+      option.addEventListener('click', () => {
+        const radio = option.querySelector('input[type="radio"]');
+        radio.checked = true;
+        const name = radio.name;
+        answers[name] = parseInt(radio.value);
+
+        // Update styling within this group
+        optionGroup.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+
+        updateProgress();
+      });
+    });
+  });
+
+  function updateProgress() {
+    const answered = Object.keys(answers).length;
+    const pct = (answered / totalQuestions) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = `${answered} / ${totalQuestions} answered`;
+    if (answered === totalQuestions) {
+      document.getElementById('warning-msg').textContent = '';
+    }
+  }
+
+  function submitAssessment() {
+    const answered = Object.keys(answers).length;
+    if (answered < totalQuestions) {
+      const remaining = totalQuestions - answered;
+      document.getElementById('warning-msg').textContent =
+        `⚠ ${remaining} question${remaining > 1 ? 's' : ''} unanswered — please complete all items.`;
+      return;
+    }
+
+    const score = Object.values(answers).reduce((a, b) => a + b, 0);
+    renderResults(score);
+  }
+
+  function renderResults(score) {
+    document.getElementById('questionnaire').style.display = 'none';
+    const results = document.getElementById('results');
+    results.style.display = 'block';
+
+    document.getElementById('score-number').textContent = score;
+
+    let diagName, diagRange, diagText, stampText, stampClass, recs;
+
+    if (score <= 3) {
+      diagName = 'Neurotypical Baseline (Autistic Normative)';
+      diagRange = 'Threshold: 0 – 3 points';
+      diagText = 'The patient demonstrates healthy, logical, and literal cognitive processing. Communication is transparent, structurally sound, and free of manipulative subtext. No intervention is currently indicated. Patient may find the neurotypical world baffling — this is a reasonable and evidence-based response.';
+      stampText = 'Within Normal Limits';
+      stampClass = 'green';
+      recs = [
+        'Continue practicing radical honesty in social contexts',
+        'Enjoy the baffled stares of those around you',
+        'You may wish to carry a laminated copy of this result'
+      ];
+    } else if (score <= 12) {
+      diagName = 'Borderline Allistic Tendencies';
+      diagRange = 'Threshold: 4 – 12 points';
+      diagText = 'The patient exhibits mild social anxiety resulting in occasional "white lies" and face-saving maneuvers. The subject demonstrates a functional awareness of social cost-benefit analysis. While not yet pathological, unchecked progression risks full ASD onset. Borderline cases frequently present with the phrase "I didn\'t want to be rude."';
+      stampText = 'Borderline';
+      stampClass = '';
+      recs = [
+        'Enroll in Radical Honesty Therapy (RHT) — 6 to 8 sessions recommended',
+        'Practice saying "no" without an attached excuse',
+        'Attempt one (1) fully direct refusal per week as homework'
+      ];
+    } else {
+      diagName = 'Profound ASD';
+      diagRange = 'Threshold: 13 – 25 points';
+      diagText = 'The patient suffers from severe impairment in direct communication. They are demonstrably unable to transmit data without wrapping it in layers of emotional manipulation, social hierarchy filtering, and intentional obfuscation. The subject likely described this assessment as "interesting" when asked their opinion, even if they found it annoying.';
+      stampText = 'ASD Confirmed';
+      stampClass = '';
+      recs = [
+        'Immediate referral to Radical Honesty Therapy (RHT) intensive program',
+        'Practice completing the sentence "I don\'t want to" without the word "but"',
+        'Identify one person you\'ve been misleading with vague calendar commitments',
+        'Attempt to make one (1) statement per day that contains zero subtext'
+      ];
+    }
+
+    document.getElementById('diagnosis-name').textContent = diagName;
+    document.getElementById('diagnosis-range').textContent = diagRange;
+    document.getElementById('diagnosis-text').textContent = diagText;
+
+    const stamp = document.getElementById('result-stamp');
+    stamp.textContent = stampText;
+    stamp.className = 'stamp ' + stampClass;
+
+    if (score <= 3) {
+      document.getElementById('score-number').classList.add('ok');
+    }
+
+    // Breakdown grid
+    const grid = document.getElementById('breakdown-grid');
+    grid.innerHTML = '';
+    const qNames = ['q1','q2','q3','q4','q5'];
+    const letterMap = {0:'A', 2:'B', 5:'C'};
+    qNames.forEach((q, i) => {
+      const pts = answers[q];
+      const div = document.createElement('div');
+      div.className = 'breakdown-item';
+      div.innerHTML = `
+        <div class="breakdown-q">Q${i+1}</div>
+        <div class="breakdown-pts pts-${pts}">${pts}</div>
+        <div class="breakdown-letter">Ans: ${letterMap[pts]}</div>
+      `;
+      grid.appendChild(div);
+    });
+
+    // Total cell
+    const totalDiv = document.createElement('div');
+    totalDiv.className = 'breakdown-item';
+    totalDiv.innerHTML = `
+      <div class="breakdown-q">Total</div>
+      <div class="breakdown-pts ${score <= 3 ? 'pts-0' : score <= 12 ? 'pts-2' : 'pts-5'}">${score}</div>
+      <div class="breakdown-letter">SQ</div>
+    `;
+    grid.appendChild(totalDiv);
+
+    // Recommendations
+    document.getElementById('recommendations-box').innerHTML = `
+      <div class="recommendations-title">Clinical Recommendations</div>
+      <ul>${recs.map(r => `<li>${r}</li>`).join('')}</ul>
+    `;
+
+    // Scroll to results
+    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function retakeAssessment() {
+    // Clear answers
+    Object.keys(answers).forEach(k => delete answers[k]);
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+
+    document.getElementById('questionnaire').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('score-number').classList.remove('ok');
+    document.getElementById('warning-msg').textContent = '';
+    updateProgress();
+
+    document.getElementById('questionnaire').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>
